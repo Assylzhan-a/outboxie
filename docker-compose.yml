@@ -1,0 +1,72 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: outboxie-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: outboxie
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  nats:
+    image: nats:2.10-alpine
+    container_name: outboxie-nats
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: "--jetstream --http_port 8222"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8222/healthz"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: outboxie-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    command: [
+      "/app/bin/example",
+      "--instance-id=instance1",
+      "--db-host=postgres",
+      "--db-port=5432",
+      "--db-user=postgres",
+      "--db-password=postgres",
+      "--db-name=outboxie",
+      "--nats-url=nats://nats:4222",
+      "--http-port=8080"
+    ]
+    restart: unless-stopped
+
+  subscriber:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: outboxie-subscriber
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+    command: [
+      "/app/bin/subscriber",
+      "--subscriber-id=subscriber1",
+      "--nats-url=nats://nats:4222"
+    ]
+    restart: unless-stopped 

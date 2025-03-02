@@ -1,0 +1,37 @@
+# Git
+.git
+.gitignore
+
+# Build artifacts
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Dependency directories
+vendor/
+
+# IDE directories
+.idea/
+.vscode/
+
+# Docker files
+Dockerfile
+docker-compose.yml
+docker-compose.distributed.yml
+.dockerignore
+
+# Logs
+*.log
+
+# OS specific
+.DS_Store
+Thumbs.db 
