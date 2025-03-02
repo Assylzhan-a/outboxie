@@ -4,6 +4,13 @@ Outboxie is a test implementation of the Transactional Outbox pattern for reliab
 
 ## For Reviewers: Quick Start
 
+## Prerequisites
+
+- Go 1.21 or later
+- Docker and Docker Compose
+- Make
+
+
 To test the distributed example from scratch, follow these simple steps:
 
 1. **Clone the repository**:
@@ -130,12 +137,6 @@ The library consists of the following components:
 ## Example
 
 The repository includes a runnable example demonstrating the use of the library in a simple order processing service.
-
-## Prerequisites
-
-- Go 1.21 or later
-- Docker and Docker Compose
-- Make
 
 ## Running the Example Locally
 
