@@ -15,10 +15,8 @@ import (
 	"github.com/assylzhan-a/outboxie/pkg/outbox/config"
 )
 
-// TestOutbox is an integration test for the outbox.
-// It requires running PostgreSQL and NATS instances.
+// TestOutbox requires running PostgreSQL and NATS instances.
 func TestOutbox(t *testing.T) {
-	// Skip the test if PostgreSQL or NATS is not available
 	dbURL := "postgres://postgres:postgres@localhost:5433/outboxie"
 	natsURL := "nats://localhost:4222"
 
@@ -35,7 +33,6 @@ func TestOutbox(t *testing.T) {
 	_, err = dbPool.Exec(ctx, "DELETE FROM outbox_messages")
 	require.NoError(t, err)
 
-	// Create a NATS connection for subscribing
 	nc, err := nats.Connect(natsURL)
 	if err != nil {
 		t.Skip("NATS is not available:", err)
@@ -43,7 +40,6 @@ func TestOutbox(t *testing.T) {
 	}
 	defer nc.Close()
 
-	// Create a channel to receive the message
 	msgCh := make(chan []byte, 1)
 
 	// Subscribe to the test topic
@@ -53,7 +49,6 @@ func TestOutbox(t *testing.T) {
 	require.NoError(t, err)
 	defer sub.Unsubscribe()
 
-	// Flush to ensure the subscription is processed by the server
 	err = nc.Flush()
 	require.NoError(t, err)
 
@@ -101,7 +96,6 @@ func TestOutbox(t *testing.T) {
 	// Wait for the message to be received
 	select {
 	case receivedData := <-msgCh:
-		// Unmarshal the received message
 		var receivedMsg TestMessage
 		err := json.Unmarshal(receivedData, &receivedMsg)
 		require.NoError(t, err)

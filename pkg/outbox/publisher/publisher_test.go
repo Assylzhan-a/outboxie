@@ -11,13 +11,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// TestNatsPublisher is an integration test for the NATS publisher.
-// It requires a running NATS instance.
+// TestNatsPublisher requires a running NATS instance.
 func TestNatsPublisher(t *testing.T) {
-	// Skip the test if NATS is not available
 	natsURL := "nats://localhost:4222"
 
-	// Create a publisher
 	pub, err := NewNatsPublisher(natsURL)
 	if err != nil {
 		t.Skip("NATS is not available:", err)
@@ -25,22 +22,18 @@ func TestNatsPublisher(t *testing.T) {
 	}
 	defer pub.Close()
 
-	// Create a NATS connection for subscribing
 	nc, err := nats.Connect(natsURL)
 	require.NoError(t, err)
 	defer nc.Close()
 
-	// Create a channel to receive the message
 	msgCh := make(chan []byte, 1)
 
-	// Subscribe to the test topic
 	sub, err := nc.Subscribe("test.topic", func(msg *nats.Msg) {
 		msgCh <- msg.Data
 	})
 	require.NoError(t, err)
 	defer sub.Unsubscribe()
 
-	// Flush to ensure the subscription is processed by the server
 	err = nc.Flush()
 	require.NoError(t, err)
 
@@ -55,7 +48,6 @@ func TestNatsPublisher(t *testing.T) {
 		Value: "test-value",
 	}
 
-	// Marshal the test message
 	payload, err := json.Marshal(testMsg)
 	require.NoError(t, err)
 
@@ -67,7 +59,6 @@ func TestNatsPublisher(t *testing.T) {
 	// Wait for the message to be received
 	select {
 	case receivedData := <-msgCh:
-		// Unmarshal the received message
 		var receivedMsg TestMessage
 		err := json.Unmarshal(receivedData, &receivedMsg)
 		require.NoError(t, err)

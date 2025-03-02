@@ -12,9 +12,13 @@ To test the distributed example from scratch, follow these simple steps:
    cd outboxie
    ```
 
-2. **Run the automated demo**:
-   
-   **Using Make:**
+2. **Run the tests and/or automated demo**:
+   Running tests with prebuilt infra
+   ```bash
+   make test-with-infra
+   ```
+
+   **Run Demo using make:**
    ```bash
    make demo
    ```

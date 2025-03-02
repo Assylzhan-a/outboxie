@@ -11,10 +11,8 @@ import (
 )
 
 func TestDatabaseLeaderElection(t *testing.T) {
-	// Skip the test if PostgreSQL is not available
 	dbURL := "postgres://postgres:postgres@localhost:5433/outboxie"
 
-	// Connect to the database
 	ctx := context.Background()
 	dbPool, err := pgxpool.New(ctx, dbURL)
 	if err != nil {

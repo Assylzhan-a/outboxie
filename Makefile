@@ -1,4 +1,4 @@
-.PHONY: test build infra-up infra-down docker-build docker-run docker-run-distributed docker-stop docker-stop-distributed docker-clean demo
+.PHONY: test build infra-up infra-down docker-build docker-run docker-run-distributed docker-stop docker-stop-distributed docker-clean demo test-with-infra
 
 # Complete demo for reviewers - runs the distributed example from scratch
 demo:
@@ -22,6 +22,12 @@ infra-up:
 # Stop the infrastructure
 infra-down:
 	docker-compose down
+
+# Start infrastructure and run tests immediately
+test-with-infra: infra-up
+	go test -v ./...
+	@echo "Tests completed. Infrastructure is still running."
+	@echo "Run 'make infra-down' when you're done to stop the infrastructure."
 
 # Build Docker images
 docker-build:
